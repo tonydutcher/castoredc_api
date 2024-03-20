@@ -27,12 +27,15 @@ class CastorFormInstance:
         self.data_points_on_id = {}
         self.data_points_on_name = {}
 
-        self.instance_of = self.find_form(study)
-        if self.instance_of is None:
-            raise CastorException(
-                f"{self.instance_type} {self.name_of_form} {self.instance_id} "
-                f"- The form that this is an instance of does not exist in the study!"
-            )
+        try:
+            self.instance_of = self.find_form(study)
+            if self.instance_of is None:
+                raise CastorException(
+                    f"{self.instance_type} {self.name_of_form} {self.instance_id} "
+                    f"- The form that this is an instance of does not exist in the study!"
+                )
+        except Exception as error:
+            print(error)
 
     def add_data_point(self, data_point: "CastorDataPoint") -> None:
         """Adds a data point to the form instance."""

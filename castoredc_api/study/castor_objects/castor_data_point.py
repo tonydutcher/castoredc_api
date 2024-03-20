@@ -30,11 +30,16 @@ class CastorDataPoint:
                 "The field that this is an instance of does not exist in the study!"
             )
         self.form_instance = None
-        self.filled_in = (
-            None
-            if filled_in == ""
-            else datetime.strptime(filled_in, "%Y-%m-%d %H:%M:%S")
-        )
+        try:
+            self.filled_in = (
+                None
+                if filled_in == ""
+                else datetime.strptime(filled_in, "%Y-%m-%d %H:%M:%S")
+            )
+        except Exception as error:
+            print(f"Unique datetime error: {error}")
+            self.filled_in = (999)
+            
         # Is missing
         self.value = self.__interpret(study)
 
@@ -218,11 +223,17 @@ class CastorDataPoint:
             try:
                 new_values = [link[value] for value in value_list]
             except KeyError as error:
-                raise CastorException(
+                new_values = ['999']          
+                print(
                     f"Optional value mapping failed for optiongroup: {study_optiongroup}"
                     f"Key `{self.raw_value}` not present in the keys of the optiongroup"
                     f"of field: {self.field_id} ({self.instance_of.field_name})"
-                ) from error
+                )
+                # raise CastorException(
+                #     f"Optional value mapping failed for optiongroup: {study_optiongroup}"
+                #     f"Key `{self.raw_value}` not present in the keys of the optiongroup"
+                #     f"of field: {self.field_id} ({self.instance_of.field_name})"
+                # ) from error
         # Return a string, for multiple answers separate them with |
         new_value = "|".join(new_values)
         return new_value

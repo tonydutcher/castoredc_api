@@ -939,15 +939,30 @@ class CastorStudy:
                 "options"
             ]
             option_names = [option["name"] for option in options]
-
+            
+            # # print for debugging
+            # print(f"checkbox={checkbox}")
+            # print(f"option_names={option_names}")
+            # print(f"options={options}")
+            
             # Create new columns for these dummies
             new_column_names = [
                 checkbox.field_name + "#" + option_name for option_name in option_names
             ]
+            
+            # # print for debugging
+            # print(dataframe.columns.tolist(), new_column_names)
+            # print(dataframe.index)
+            dupes = dataframe.loc[:, dataframe.columns.duplicated()]
+            if not dupes.empty:
+                print("Duplicate columns")
+                print(dupes)
+                
+            dataframe = dataframe.loc[:, ~dataframe.columns.duplicated()]
             dataframe = dataframe.reindex(
                 columns=dataframe.columns.tolist() + new_column_names, fill_value=0
             )
-
+            
             # Replace the old column in the order with the new dummy columns
             index = column_order.index(checkbox.field_name)
             column_order.pop(index)
